@@ -9,6 +9,7 @@ import (
 )
 
 type nilValueType interface{}
+
 var nilValue *nilValueType = nil
 
 func appendValueFor(array []reflect.Value, obj interface{}) []reflect.Value {
@@ -53,7 +54,7 @@ func ToBeTrue(actual interface{}) (string, bool) {
 
 // A matcher that expects the value to be false
 func ToBeFalse(actual interface{}) (string, bool) {
-    return ToEqual(actual, false)
+	return ToEqual(actual, false)
 }
 
 // A matcher that expects the value to be nil
@@ -155,7 +156,7 @@ func Expect(r Reporter, obj interface{}, test interface{}, args ...interface{}) 
 	testfn := reflect.ValueOf(test)
 	if testfn.Kind() != reflect.Func {
 		stacktrace := tabulate("Stacktrace: ", getStackTrace(3), "\n")
-        r.Logf("Expect() requires 3rd argument to be matcher func\n       got: %#v\n\n%s", test, stacktrace)
+		r.Logf("Expect() requires 3rd argument to be matcher func\n       got: %#v\n\n%s", test, stacktrace)
 		os.Exit(1)
 	}
 
@@ -170,7 +171,17 @@ func Expect(r Reporter, obj interface{}, test interface{}, args ...interface{}) 
 
 // Fails the test immediately
 func Fail(r Reporter, message string) {
-    stacktrace := tabulate(" stacktrace: ", getStackTrace(3), "\n")
-    r.Logf("Fail %s:\n%s", message, stacktrace)
-    r.FailNow()
+	stacktrace := tabulate(" stacktrace: ", getStackTrace(3), "\n")
+	r.Logf("Fail %s:\n%s", message, stacktrace)
+	r.FailNow()
+}
+
+// Shorthand for Expect(t, value, ToBeNil)
+// Used to assert that errors are nil.
+func Must(r Reporter, value error) {
+	if value != nil {
+		stacktrace := tabulate(" stacktrace: ", getStackTrace(3), "\n")
+		r.Logf("Must failed: got %s\n%s", value, stacktrace)
+		r.FailNow()
+	}
 }
