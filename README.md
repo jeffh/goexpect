@@ -22,6 +22,11 @@ Then use it in your tests:
 Use the `Expect` function to perform assertions on the codebase, followed by
 the value in question and a matcher. Additional arguments are passed to `Expect` after the matcher.
 
+Two other functions which may be interesting:
+
+ - `Must(*testing.T, error)` checks if error is nil. Shorthand to Expect(t, err, ToBeNil).
+ - `Fail(string)` always fails a test.
+
 Matchers
 ------------
 
