@@ -49,6 +49,13 @@ Writing Custom Matchers
 
 A matcher is a function that has one argument plus any additional argument it chooses to have:
 
-    func(actual interface{})
+    func(actual interface{}) (string, bool)
 
-Where `actual` is the actual value that `Expect` received. Any value parameters are 
+Where `actual` is the actual value that `Expect` received. Any value additional parameters
+can be specified. The return values are the error message string and the bool indicating if
+the assertion has passed.
+
+
+Also, typed values can be provided if you expect certain types:
+
+    func(haystack, needle string) (string, bool)
