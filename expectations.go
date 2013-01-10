@@ -60,19 +60,13 @@ func ToBeFalse(actual interface{}) (string, bool) {
 // A matcher that expects the value to be nil
 func ToBeNil(actual interface{}) (string, bool) {
 	value := reflect.ValueOf(actual)
-	if value.Kind() != reflect.Ptr || !value.IsNil() {
-		return "to be nil", false
-	}
-	return "", true
+	return "to be nil", value.Kind() == reflect.Ptr && value.IsNil()
 }
 
 // Expects the given value to have a length of the provided value
 func ToBeLengthOf(actual interface{}, size int) (string, bool) {
 	value := reflect.ValueOf(actual)
-	if value.Len() != size {
-		return fmt.Sprintf("to be length of %d (got %d)", size, value.Len()), false
-	}
-	return "", true
+	return fmt.Sprintf("to be length of %d (got %d)", size, value.Len()), value.Len() == size
 }
 
 // Expects the given value to be have a length of zero
@@ -86,18 +80,12 @@ func ToBeEmpty(actual interface{}) (string, bool) {
 
 // Performs a simple equality comparison. Does not perform a deep equality.
 func ToBe(actual, expected interface{}) (string, bool) {
-	if actual != expected {
-		return fmt.Sprintf("to equal %#v", expected), false
-	}
-	return "", true
+	return fmt.Sprintf("to equal %#v", expected), actual == expected
 }
 
 // Performs a deep equal - comparing struct, arrays, and slices items too.
 func ToEqual(actual, expected interface{}) (string, bool) {
-	if !reflect.DeepEqual(actual, expected) {
-		return fmt.Sprintf("to deeply equal %#v", expected), false
-	}
-	return "", true
+	return fmt.Sprintf("to deeply equal %#v", expected), reflect.DeepEqual(actual, expected)
 }
 
 func getStackTrace(offset int) string {
