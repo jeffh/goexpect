@@ -42,8 +42,7 @@ func Not(test interface{}) func(actual interface{}, args ...interface{}) (string
 		returnValues := reflect.ValueOf(test).Call(argValues)
 		str, ok := returnValues[0].String(), returnValues[1].Bool()
 
-		return fmt.Sprintf("not %s (%v)", str), !ok
-
+		return fmt.Sprintf("not %s", str), !ok
 	}
 }
 
