@@ -25,7 +25,7 @@ the value in question and a matcher. Additional arguments are passed to `Expect`
 Two other functions which may be interesting:
 
  - `Must(*testing.T, error)` checks if error is nil. Shorthand to Expect(t, err, ToBeNil).
- - `Fail(string)` always fails a test.
+ - `Fail(*testing.T, string)` always fails a test.
 
 Matchers
 ------------
@@ -64,3 +64,15 @@ the assertion has passed.
 Also, typed values can be provided if you expect certain types:
 
     func(haystack, needle string) (string, bool)
+
+Using Another Reporter
+----------------------
+
+`Expect` `Must` and `Fail` don't directly depend on `*testing.T`, but use an interface that requires the
+following methods:
+
+    Logf(format string, args...interface{})
+    FailNow()
+
+Where `Logf` is a 'Sprintf' styled format string and `FailNow` tells the test framework to abort the currently
+running code.
