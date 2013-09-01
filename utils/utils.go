@@ -1,17 +1,21 @@
-package goexpect
+package utils
 
 import (
-    "fmt"
-    "reflect"
-    "runtime"
-    "strings"
+	"fmt"
+	"reflect"
+	"runtime"
+	"strings"
 )
+
+func ValueAsString(v interface{}) string {
+	return fmt.Sprintf("%#v (%T)", v, v)
+}
 
 type nilValueType interface{}
 
 var nilValue *nilValueType = nil
 
-func appendValueFor(array []reflect.Value, obj interface{}) []reflect.Value {
+func AppendValueFor(array []reflect.Value, obj interface{}) []reflect.Value {
 	var value reflect.Value
 	if reflect.TypeOf(obj) == nil {
 		value = reflect.ValueOf(nilValue)
@@ -21,7 +25,7 @@ func appendValueFor(array []reflect.Value, obj interface{}) []reflect.Value {
 	return append(array, value)
 }
 
-func getStackTrace(offset int) string {
+func GetStackTrace(offset int) string {
 	strstack := make([]string, 0)
 	stack := make([]uintptr, 100)
 	count := runtime.Callers(offset, stack)
@@ -37,7 +41,7 @@ func getStackTrace(offset int) string {
 	return strings.Join(strstack, "\n")
 }
 
-func tabulate(prefix, content, sep string) string {
+func Tabulate(prefix, content, sep string) string {
 	lines := strings.Split(content, sep)
 	buffer := strings.Repeat(" ", len(prefix))
 	for i, line := range lines {

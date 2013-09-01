@@ -2,6 +2,7 @@ package goexpect
 
 import (
 	"fmt"
+	. "github.com/jeffh/goexpect/utils"
 	"reflect"
 )
 
@@ -16,9 +17,9 @@ func Not(test interface{}) func(actual interface{}, args ...interface{}) (string
 	return func(actual interface{}, args ...interface{}) (string, bool) {
 		var argValues []reflect.Value
 
-		argValues = appendValueFor(argValues, actual)
+		argValues = AppendValueFor(argValues, actual)
 		for _, v := range args {
-			argValues = appendValueFor(argValues, v)
+			argValues = AppendValueFor(argValues, v)
 		}
 
 		returnValues := reflect.ValueOf(test).Call(argValues)
@@ -67,7 +68,7 @@ func ToBeNil(actual interface{}) (string, bool) {
 //
 func ToBeLengthOf(actual interface{}, size int) (string, bool) {
 	value := reflect.ValueOf(actual)
-	msg := fmt.Sprintf("to be length of %d, got (size: %d; value: %#v)", size, value.Len(), actual)
+	msg := fmt.Sprintf("to be length of %d, got (%s; size: %d)", size, ValueAsString(actual), value.Len())
 	return msg, value.Len() == size
 }
 
@@ -79,7 +80,7 @@ func ToBeLengthOf(actual interface{}, size int) (string, bool) {
 //
 func ToBeEmpty(actual interface{}) (string, bool) {
 	value := reflect.ValueOf(actual)
-	msg := fmt.Sprintf("to be empty (size: %d; value: %#v)", value.Len(), actual)
+	msg := fmt.Sprintf("to be empty (%s; size: %d)", ValueAsString(actual), value.Len())
 	return msg, value.Len() == 0
 }
 
@@ -90,7 +91,7 @@ func ToBeEmpty(actual interface{}) (string, bool) {
 //    Expect(t, value, ToBe, "foo")
 //
 func ToBe(actual, expected interface{}) (string, bool) {
-	return fmt.Sprintf("to be %#v", expected), actual == expected
+	return fmt.Sprintf("to be %s", ValueAsString(expected)), actual == expected
 }
 
 // Performs a deep equal - comparing struct, arrays, and slices items too.
@@ -100,5 +101,5 @@ func ToBe(actual, expected interface{}) (string, bool) {
 //    Expect(t, value, ToEqual, []string{"Foo", "Bar"})
 //
 func ToEqual(actual, expected interface{}) (string, bool) {
-	return fmt.Sprintf("to deeply equal %#v", expected), reflect.DeepEqual(actual, expected)
+	return fmt.Sprintf("to equal %s", ValueAsString(expected)), reflect.DeepEqual(actual, expected)
 }

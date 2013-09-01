@@ -1,4 +1,4 @@
-package goexpect
+package utils
 
 import (
 	"fmt"

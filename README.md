@@ -58,12 +58,50 @@ A matcher is a function that has one argument plus any additional argument it ch
 
 Where `actual` is the actual value that `Expect` received. Any value additional parameters
 can be specified. The return values are the error message string and the bool indicating if
-the assertion has passed.
+the assertion has passed. The error message string should always be returned for decorators,
+such as `Not` to modify the message string.
 
 
 Also, typed values can be provided if you expect certain types:
 
     func(haystack, needle string) (string, bool)
+
+Including the `utils` subpackage provides a unified way to output the value arguments:
+
+    import (
+        "fmt"
+        "github.com/jefh/goexpect/utils"
+        "reflect"
+    )
+
+    func ToEqual(actual, expected interface{}) (string, bool) {
+        return fmt.Sprintf("to equal %s", utils.ValueAsString(expected)), reflect.DeepEqual(actual, expected)
+    }
+
+`utils.ValuesAsString` provides the actual type, which is useful for trouble shooting two
+value that are the same underlying type.
+
+The `utils` package also includes a simple way to append arbitrary values to a reflect.Value slice:
+
+    func Not(test interface{}) func(actual interface{}, args ...interface{}) (string, bool) {
+        return func(actual interface{}, args ...interface{}) (string, bool) {
+            var argValues []reflect.Value
+
+            argValues = utils.AppendValueFor(argValues, actual)
+            for _, v := range args {
+                argValues = utils.AppendValueFor(argValues, v)
+            }
+
+            returnValues := reflect.ValueOf(test).Call(argValues)
+            str, ok := returnValues[0].String(), returnValues[1].Bool()
+
+            return fmt.Sprintf("not %s", str), !ok
+        }
+    }
+
+Unlike a naive append() with reflect.ValueOf, `AppendValueFor` correctly marks nil values for
+use in `reflect.Value.Call`.
+
 
 Using Another Reporter
 ----------------------
