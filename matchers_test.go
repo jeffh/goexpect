@@ -68,7 +68,7 @@ func TestToBeLengthOfShouldCheckLen(t *testing.T) {
 	if ok {
 		t.Fatalf("ToBeLengthOf should not be ok for (%#v, 0)", filledArray)
 	}
-	assertStringEquals(t, msg, "to be length of 0, got (size: 1; value: []string{\"Foo\"})", "ToBeLengthOf")
+	assertStringEquals(t, msg, "to be length of 0, got 1", "ToBeLengthOf")
 }
 
 func TestToBeEmptyShouldCheckEmptinessInCollections(t *testing.T) {

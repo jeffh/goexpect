@@ -7,8 +7,18 @@ import (
 	"strings"
 )
 
+const DefaultValueStringMax = 128
+
+var ValueStringMax int = DefaultValueStringMax
+
 func ValueAsString(v interface{}) string {
-	return fmt.Sprintf("%#v (%T)", v, v)
+	value := fmt.Sprintf("%#v", v)
+	if ValueStringMax > 0 {
+		if len(value) > ValueStringMax {
+			value = value[:ValueStringMax-5] + "<...>" + value[len(value)-128+5:]
+		}
+	}
+	return fmt.Sprintf("%s (%T)", value, v)
 }
 
 type nilValueType interface{}

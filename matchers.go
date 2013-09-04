@@ -68,7 +68,7 @@ func ToBeNil(actual interface{}) (string, bool) {
 //
 func ToBeLengthOf(actual interface{}, size int) (string, bool) {
 	value := reflect.ValueOf(actual)
-	msg := fmt.Sprintf("to be length of %d, got (%s; size: %d)", size, ValueAsString(actual), value.Len())
+	msg := fmt.Sprintf("to be length of %d, got %d", size, value.Len())
 	return msg, value.Len() == size
 }
 
