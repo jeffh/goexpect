@@ -71,6 +71,22 @@ func TestToBeLengthOfShouldCheckLen(t *testing.T) {
 	assertStringEquals(t, msg, "to be length of 0, got 1", "ToBeLengthOf")
 }
 
+func TestToBeLengthOfShouldNotPanic(t *testing.T) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			t.Fatalf("Failed to recover from panic: %s", err)
+		}
+	}()
+
+	invalid := 2
+	msg, ok := ToBeLengthOf(invalid, 0)
+	if ok {
+		t.Fatalf("ToBeLengthOf should not be ok for (%#v, 0)", invalid)
+	}
+	assertStringEquals(t, msg, "to be length of 0, but has no length", "ToBeLengthOf")
+}
+
 func TestToBeEmptyShouldCheckEmptinessInCollections(t *testing.T) {
 	filledArray := []string{"Foo"}
 	emptyArray := []string{}
@@ -78,7 +94,7 @@ func TestToBeEmptyShouldCheckEmptinessInCollections(t *testing.T) {
 	if ok {
 		t.Fatalf("ToBeEmpty should not be ok for %#v", filledArray)
 	}
-	assertStringEquals(t, msg, "to be empty (size: 1; value: []string{\"Foo\"})", "ToBeEmpty")
+	assertStringEquals(t, msg, "to be empty ([]string{\"Foo\"} ([]string); size: 1)", "ToBeEmpty")
 
 	msg, ok = ToBeEmpty(emptyArray)
 	if !ok {
@@ -90,4 +106,20 @@ func TestToBeEmptyShouldCheckEmptinessInCollections(t *testing.T) {
 	if !ok {
 		t.Fatalf("ToBeEmpty should be ok for %#v (size %d)", hash, len(hash))
 	}
+}
+
+func TestToBeEmptyShouldNotPanic(t *testing.T) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			t.Fatalf("Failed to recover from panic: %s", err)
+		}
+	}()
+
+	invalid := 2
+	msg, ok := ToBeEmpty(invalid)
+	if ok {
+		t.Fatalf("ToBeEmpty should not be ok for (%#v, 0)", invalid)
+	}
+	assertStringEquals(t, msg, "to be empty, but has no length", "ToBeEmpty")
 }

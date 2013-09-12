@@ -36,7 +36,7 @@ func Not(test interface{}) func(actual interface{}, args ...interface{}) (string
 //    Expect(t, value, ToBeTrue)
 //
 func ToBeTrue(actual interface{}) (string, bool) {
-	return ToBe(actual, true)
+	return "to be true", actual == true
 }
 
 // A matcher that expects the value to be false
@@ -46,7 +46,7 @@ func ToBeTrue(actual interface{}) (string, bool) {
 //    Expect(t, value, ToBeTrue)
 //
 func ToBeFalse(actual interface{}) (string, bool) {
-	return ToBe(actual, false)
+	return "to be false", actual == false
 }
 
 // A matcher that expects the value to be nil
@@ -66,10 +66,18 @@ func ToBeNil(actual interface{}) (string, bool) {
 //
 //    Expect(t, value, ToBeLengthOf, 5)
 //
-func ToBeLengthOf(actual interface{}, size int) (string, bool) {
+func ToBeLengthOf(actual interface{}, size int) (msg string, ok bool) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			msg = fmt.Sprintf("to be length of %d, but has no length", size)
+			ok = false
+		}
+	}()
 	value := reflect.ValueOf(actual)
-	msg := fmt.Sprintf("to be length of %d, got %d", size, value.Len())
-	return msg, value.Len() == size
+	ok = (value.Len() == size)
+	msg = fmt.Sprintf("to be length of %d, got %d", size, value.Len())
+	return
 }
 
 // Expects the given value to be have a length of zero
@@ -78,10 +86,18 @@ func ToBeLengthOf(actual interface{}, size int) (string, bool) {
 //
 //    Expect(t, value, ToBeEmpty)
 //
-func ToBeEmpty(actual interface{}) (string, bool) {
+func ToBeEmpty(actual interface{}) (msg string, ok bool) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			msg = fmt.Sprintf("to be empty, but has no length")
+			ok = false
+		}
+	}()
 	value := reflect.ValueOf(actual)
-	msg := fmt.Sprintf("to be empty (%s; size: %d)", ValueAsString(actual), value.Len())
-	return msg, value.Len() == 0
+	ok = (value.Len() == 0)
+	msg = fmt.Sprintf("to be empty (%s; size: %d)", ValueAsString(actual), value.Len())
+	return
 }
 
 // Performs a simple equality comparison. Does not perform a deep equality.

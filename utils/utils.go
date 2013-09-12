@@ -35,10 +35,17 @@ func AppendValueFor(array []reflect.Value, obj interface{}) []reflect.Value {
 	return append(array, value)
 }
 
+// Returns a stacktrace string to the invocation of GetStackTrace()
+// Due to the inaccuracys of runetime.Callers, this line number may
+// be off by one
 func GetStackTrace(offset int) string {
 	strstack := make([]string, 0)
 	stack := make([]uintptr, 100)
-	count := runtime.Callers(offset, stack)
+	/*
+		_, file, line, _ := runtime.Caller(offset + 1)
+		fmt.Printf("\n\n%s:%d\n", file, line)
+	*/
+	count := runtime.Callers(offset+2, stack)
 	stack = stack[0:count]
 	for i, pc := range stack {
 		fn := runtime.FuncForPC(pc)
