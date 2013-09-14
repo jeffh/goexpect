@@ -41,17 +41,15 @@ func AppendValueFor(array []reflect.Value, obj interface{}) []reflect.Value {
 func GetStackTrace(offset int) string {
 	strstack := make([]string, 0)
 	stack := make([]uintptr, 100)
-	/*
-		_, file, line, _ := runtime.Caller(offset + 1)
-		fmt.Printf("\n\n%s:%d\n", file, line)
-	*/
+	// runtime.Caller is more accurate than runtime.Callers
+	_, sourceFile, sourceLine, _ := runtime.Caller(offset + 1)
 	count := runtime.Callers(offset+2, stack)
 	stack = stack[0:count]
 	for i, pc := range stack {
 		fn := runtime.FuncForPC(pc)
 		file, line := fn.FileLine(pc)
 		if i == 0 {
-			line--
+			file, line = sourceFile, sourceLine
 		}
 		strstack = append(strstack, fmt.Sprintf("%s:%d\n    inside %s", file, line, fn.Name()))
 	}
